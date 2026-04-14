@@ -25,5 +25,5 @@
 ### 1. 克隆仓库
 
 ```bash
-git clone https://github.com/你的用户名/rag-qa-system.git
+git clone https://github.com/caosheng-hub/rag-qa-system.git
 cd rag-qa-system
