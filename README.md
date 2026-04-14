@@ -15,11 +15,13 @@
 
 ### 整体架构图
 
+```
 [用户上传文档] → 文本分割 → 向量化 → Chroma 存储
-↓
+                     ↓
 [用户提问] → 向量检索 → 上下文增强 → LLM 生成 → 流式返回
-↑
-对话历史管理（本地持久化）
+                     ↑
+              对话历史管理（本地持久化）
+```
 
 ### 技术选型及理由
 
@@ -90,3 +92,40 @@ git clone https://github.com/yourname/rag-qa-system.git
 cd rag-qa-system
 pip install -r requirements.txt
 export DASHSCOPE_API_KEY="sk-xxx"
+```
+
+### 启动服务
+```bash
+# 终端1：启动知识库上传
+streamlit run app_file_uploader.py --server.port 8501
+
+# 终端2：启动问答
+streamlit run app_qa.py --server.port 8502
+```
+
+### 测试用例
+1. 上传 `data/尺码推荐.txt`
+2. 提问：“身高175cm，体重140斤，穿什么尺码？” → 期望回答 “XL”
+3. 追问：“那这个尺码适合什么场合？” → 期望结合历史与知识库回答
+
+## 6. 优化与扩展方向
+
+### 已实现的优化
+- MD5 去重减少冗余存储
+- 流式输出提升交互体验
+- 配置文件与代码分离，便于调参
+
+### 可扩展方向
+- **多用户支持**：从 Streamlit session 或 JWT token 获取 `session_id`，替换固定值。
+- **增量更新**：改为基于分块 MD5 的去重，支持文档部分修改。
+- **混合检索**：引入 BM25 关键词检索与向量检索融合（HyDE、RRF）。
+- **缓存机制**：对常见问题缓存答案，降低 LLM 调用延迟与成本。
+- **监控与日志**：集成 LangSmith 或自定义日志，追踪检索质量与模型输出。
+
+## 7. 项目总结
+
+本项目完整实现了一套生产可用的 RAG 问答系统，体现了以下能力：
+- 熟练掌握 LangChain 框架及其核心抽象（Runnable、Chain、MessageHistory）
+- 能够根据需求选择合适的技术组件（Chroma、DashScope、Streamlit）
+- 解决实际工程问题（去重、流式输出、数据结构转换）
+- 具备系统设计思维（解耦、配置管理、可扩展性）
